@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link
+	rel="stylesheet"
+	href="/css/style.css">
+<title>Create Blog</title>
+
+
+</head>
+
+<body>
+
+<div class="nav">
+
+<div class="logo">
+
+BlogHub
+
+</div>
+
+<button
+onclick="dashboard()">
+
+Dashboard
+
+</button>
+
+</div>
+
+<div class="wrapper">
+
+<div class="editor">
+
+<input
+
+id="title"
+
+placeholder=
+
+"Write your title..."
+
+>
+
+<textarea
+
+id="content"
+
+placeholder=
+
+"Start writing..."
+
+></textarea>
+
+<div class="actions">
+
+<button
+
+class="publish"
+
+onclick="publish()"
+
+>
+
+Publish
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function dashboard(){
+
+window.location=
+
+"/dashboard.html";
+
+}
+
+async function publish(){
+
+let user=
+
+JSON.parse(
+
+localStorage
+.getItem(
+"user"
+)
+
+);
+
+if(
+!user
+){
+
+window.location=
+"/login.html";
+
+return;
+
+}
+
+let response=
+
+await fetch(
+
+"/blogs?userId="
+
++
+
+user.id,
+
+{
+
+method:
+
+"POST",
+
+headers:{
+
+"Content-Type":
+
+"application/json"
+
+},
+
+body:
+
+JSON.stringify({
+
+title:
+
+document
+.getElementById(
+"title"
+)
+.value,
+
+content:
+
+document
+.getElementById(
+"content"
+)
+.value
+
+})
+
+}
+
+);
+
+if(
+response.ok
+){
+
+alert(
+"Published"
+);
+
+window.location=
+"/blogs.html";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="/css/style.css">
+<title>Explore Blogs</title>
+</head>
+
+<body>
+
+<div class="nav">
+
+  <div class="logo">BlogHub</div>
+
+  <div class="actions">
+    <button onclick="dashboard()">Dashboard</button>
+    <button onclick="myBlogs()">My Blogs</button>
+    <button onclick="create()">Create</button>
+  </div>
+
+</div>
+
+<div id="blogs" class="feed"></div>
+
+<script>
+
+	function openModal(b){
+
+	  document.getElementById("modal").classList.remove("hidden");
+
+	  document.getElementById("mTitle").innerText = b.title;
+
+	  document.getElementById("mAuthor").innerText =
+	    "By " + (b.user ? b.user.name : "Unknown");
+
+	  document.getElementById("mContent").innerText = b.content;
+	}
+
+	function closeModal(){
+	  document.getElementById("modal").classList.add("hidden");
+	}
+async function load(){
+
+  blogs.innerHTML = "<p class='loading'>Loading blogs...</p>";
+
+  let response = await fetch("/blogs");
+  let data = await response.json();
+
+  let html = "";
+
+  data.forEach(b => {
+
+	html += `
+	  <div class="blog-card" onclick='openModal(${JSON.stringify(b)})'>
+
+        <div class="blog-header">
+
+          <div class="title">${b.title}</div>
+
+          <div class="author-badge">
+            ${b.user ? b.user.name : "Unknown"}
+          </div>
+
+        </div>
+
+        <div class="content">
+          ${b.content}
+        </div>
+
+        <div class="blog-footer">
+
+          <button onclick="edit(${b.id})"> Edit</button>
+          <button onclick="remove(${b.id})" class="danger"> Delete</button>
+
+        </div>
+
+      </div>
+    `;
+  });
+
+  blogs.innerHTML = html;
+}
+
+function dashboard(){
+  window.location="/dashboard.html";
+}
+
+function create(){
+  window.location="/create-blog.html";
+}
+
+function myBlogs(){
+  window.location="/my-blogs.html";
+}
+
+function edit(id){
+  window.location="/edit-blog.html?id=" + id;
+}
+
+async function remove(id){
+  await fetch("/blogs/" + id, { method: "DELETE" });
+  load();
+}
+
+load();
+
+</script>
+<div id="modal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <span class="close" onclick="closeModal()">*</span>
+
+    <h2 id="mTitle"></h2>
+
+    <p id="mAuthor"></p>
+
+    <div id="mContent"></div>
+
+  </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="/css/style.css">
+<title>BlogHub</title>
+</head>
+
+<body>
+
+<div class="nav">
+  <div class="logo">BlogHub</div>
+  <div id="user" class="user"></div>
+</div>
+
+<div class="container">
+
+  <div class="dashboard-card">
+
+    <h1>Welcome Back...</h1>
+
+    <p class="subtitle">Create * Share  * Inspire</p>
+
+    <div class="grid">
+
+      <button onclick="create()"> Create Blog</button>
+      <button onclick="blogs()"> Explore Blogs</button>
+      <button onclick="myBlogs()"> My Blogs</button>
+      <button onclick="logout()" class="danger"> Logout</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+let user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+  window.location="/login.html";
+}
+
+document.getElementById("user").innerHTML =
+  "Hi, " + user.name;
+
+function create(){ window.location="/create-blog.html"; }
+function blogs(){ window.location="/blogs.html"; }
+function myBlogs(){ window.location="/my-blogs.html"; }
+
+function logout(){
+  localStorage.removeItem("user");
+  window.location="/login.html";
+}
+
+</script>
+
+</body>
+
+</html>
