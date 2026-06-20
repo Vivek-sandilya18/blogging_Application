@@ -1,10 +1,8 @@
 package com.blog.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import com.blog.entity.Blog;
 import com.blog.service.BlogService;
 
@@ -15,8 +13,6 @@ public class BlogController {
 @Autowired
 private BlogService service;
 
-
-// CREATE BLOG WITH USER
 @PostMapping
 public Blog create(
 
