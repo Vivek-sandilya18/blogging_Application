@@ -10,6 +10,11 @@ import com.blog.entity.Blog;
 import com.blog.entity.User;
 import com.blog.repository.BlogRepository;
 import com.blog.repository.UserRepository;
+import com.blog.entity.BlogLike;
+import com.blog.repository.BlogLikeRepository;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class BlogService {
@@ -19,6 +24,8 @@ private BlogRepository repo;
 
 @Autowired
 private UserRepository userRepo;
+@Autowired
+private BlogLikeRepository blogLikeRepo;
 
 public List<Blog>
 getMyBlogs(
@@ -127,6 +134,48 @@ repo.deleteById(
 id
 );
 
+}
+//LIKE / DISLIKE
+public Map<String, Object> reactToBlog(Long blogId, Long userId, String type) {
+
+ Blog blog = repo.findById(blogId).orElseThrow();
+
+ User user = userRepo.findById(userId).orElseThrow();
+
+ Optional<BlogLike> existing = blogLikeRepo.findByUserAndBlog(user, blog);
+
+ if (existing.isPresent()) {
+     BlogLike existingReaction = existing.get();
+
+     if (existingReaction.getType().equals(type)) {
+        
+         blogLikeRepo.delete(existingReaction);
+     } else {
+        
+         existingReaction.setType(type);
+         blogLikeRepo.save(existingReaction);
+     }
+ } else {
+     
+     blogLikeRepo.save(new BlogLike(user, blog, type));
+ }
+
+ int likes = blogLikeRepo.countByBlogAndType(blog, "LIKE");
+ int dislikes = blogLikeRepo.countByBlogAndType(blog, "DISLIKE");
+
+ Map<String, Object> result = new HashMap<>();
+ result.put("likeCount", likes);
+ result.put("dislikeCount", dislikes);
+ return result;
+}
+public Map<String, Object> getCounts(Long blogId) {
+    Blog blog = repo.findById(blogId).orElseThrow();
+    int likes = blogLikeRepo.countByBlogAndType(blog, "LIKE");
+    int dislikes = blogLikeRepo.countByBlogAndType(blog, "DISLIKE");
+    Map<String, Object> result = new HashMap<>();
+    result.put("likeCount", likes);
+    result.put("dislikeCount", dislikes);
+    return result;
 }
 
 }

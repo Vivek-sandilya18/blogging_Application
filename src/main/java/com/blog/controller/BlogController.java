@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.blog.entity.Blog;
 import com.blog.service.BlogService;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/blogs")
@@ -109,6 +110,25 @@ service.delete(
 id
 );
 
+}
+//LIKE / DISLIKE
+@PutMapping("/{id}/react")
+public Map<String, Object> react(
+
+ @PathVariable Long id,
+
+ @RequestParam Long userId,
+
+ @RequestParam String type
+
+) {
+
+ return service.reactToBlog(id, userId, type);
+
+}
+@GetMapping("/{id}/counts")
+public Map<String, Object> getCounts(@PathVariable Long id) {
+    return service.getCounts(id);
 }
 
 }
