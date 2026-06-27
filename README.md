@@ -1,46 +1,52 @@
 # 📝 Blogging Application
 
-A full-stack blogging platform built using Spring Boot that allows users to create, manage, edit, and publish blogs through a clean and responsive interface.
+A full-stack blogging platform built using **Spring Boot** that enables users to create, manage, publish, and interact with blogs through a clean and responsive interface.
 
 ---
 
 ## 🚀 Features
 
-✅ User Registration & Login  
-✅ Authentication & Authorization  
-✅ Create New Blogs  
-✅ Edit Existing Blogs  
-✅ Delete Blogs  
-✅ View All Published Blogs  
-✅ My Blogs Section  
-✅ Responsive User Interface  
-✅ REST API Integration  
-✅ Database Connectivity  
+✅ User Registration & Login
+✅ Authentication & Authorization
+✅ Create New Blogs
+✅ Edit Existing Blogs
+✅ Delete Blogs
+✅ View All Published Blogs
+✅ My Blogs Section
+✅ Like Blogs 👍
+✅ Dislike Blogs 👎
+✅ Real-time Blog Interaction
+✅ Responsive User Interface
+✅ REST API Integration
+✅ Database Connectivity
 
 ---
 
 ## 🛠 Tech Stack
 
 ### Backend
-- Java
-- Spring Boot
-- Spring MVC
-- Spring Data JPA
-- Maven
+
+* Java
+* Spring Boot
+* Spring MVC
+* Spring Data JPA
+* Maven
 
 ### Frontend
-- HTML
-- CSS
-- JavaScript
+
+* HTML
+* CSS
+* JavaScript
 
 ### Database
-- MySQL
+
+* MySQL
 
 ---
 
 ## 📂 Project Structure
 
-```text
+```plaintext
 blogging_Application
 │
 ├── src
@@ -66,7 +72,7 @@ blogging_Application
 git clone https://github.com/Vivek-sandilya18/blogging_Application.git
 ```
 
-### Move into project
+### Move into Project
 
 ```bash
 cd blogging_Application
@@ -84,7 +90,7 @@ mvn spring-boot:run
 
 Open:
 
-```text
+```plaintext
 src/main/resources/application.properties
 ```
 
@@ -100,25 +106,35 @@ spring.datasource.password=your_password
 
 ## 🌐 Application Flow
 
-User Registration  
-↓  
-Login  
-↓  
-Create Blog  
-↓  
-Manage Blogs  
-↓  
-Publish Content  
+```plaintext
+User Registration
+        ↓
+Login
+        ↓
+Create Blog
+        ↓
+Like / Dislike Blogs
+        ↓
+Manage Blogs
+        ↓
+Publish Content
+```
 
-
+---
 
 ## 🎯 Future Improvements
 
-- Comments System
-- Profile Management
-- Search Blogs
-- Categories & Tags
-- Image Upload
-- Admin Dashboard
+* Comments System
+* Profile Management
+* Search Blogs
+* Categories & Tags
+* Image Upload
+* Admin Dashboard
+* Bookmark Feature
+* Blog Analytics
 
-⭐ If you like this project, give it a star.
+---
+
+## ⭐ Support
+
+If you like this project, don't forget to **give it a star ⭐** and contribute to improve it.
