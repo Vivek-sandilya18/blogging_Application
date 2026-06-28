@@ -15,9 +15,19 @@ public class Blog {
 private Long id;
 
 private String title;
+private String imageUrl;
 
 @Column(columnDefinition = "TEXT")
 private String content;
+
+public String getImageUrl() {
+	return imageUrl;
+}
+
+
+public void setImageUrl(String imageUrl) {
+	this.imageUrl = imageUrl;
+}
 
 private LocalDateTime createdAt;
 

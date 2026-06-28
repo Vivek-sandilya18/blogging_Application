@@ -15,6 +15,8 @@ import com.blog.repository.BlogLikeRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 @Service
 public class BlogService {
@@ -26,6 +28,8 @@ private BlogRepository repo;
 private UserRepository userRepo;
 @Autowired
 private BlogLikeRepository blogLikeRepo;
+@Autowired
+private CloudinaryService cloudinaryService;
 
 public List<Blog>
 getMyBlogs(
@@ -43,37 +47,20 @@ userId
 
 
 // CREATE WITH USER
-public Blog createWithUser(
+public Blog createWithUser(Blog blog, Long userId, MultipartFile image) throws IOException {
 
-Blog blog,
+    User user = userRepo.findById(userId).orElseThrow();
 
-Long userId
+    blog.setUser(user);
+    blog.setCreatedAt(LocalDateTime.now());
 
-){
+    if (image != null && !image.isEmpty()) {
+        String imageUrl = cloudinaryService.uploadFile(image);
+        blog.setImageUrl(imageUrl);
+    }
 
-User user =
-
-userRepo
-.findById(
-userId
-)
-
-.orElseThrow();
-
-blog.setUser(
-user
-);
-
-blog.setCreatedAt(
-LocalDateTime.now()
-);
-
-return repo.save(
-blog
-);
-
+    return repo.save(blog);
 }
-
 
 // GET ALL
 public List<Blog> getAll(){

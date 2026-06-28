@@ -21,9 +21,11 @@
 
 <div id="modal" class="modal hidden">
     <div class="modal-content">
-       <span class="close" onclick="closeModal()">X</span>
+        <span class="close" onclick="closeModal()">X</span>
         <h2 id="mTitle"></h2>
         <p id="mAuthor"></p>
+        <img id="mImage" src="" style="width:100%; border-radius:12px; margin:10px 0; display:none;">
+        <video id="mVideo" src="" controls style="width:100%; border-radius:12px; margin:10px 0; display:none;"></video>
         <div id="mContent"></div>
     </div>
 </div>
@@ -37,6 +39,24 @@ function openModal(b) {
     document.getElementById("mTitle").innerText = b.title;
     document.getElementById("mAuthor").innerText = "By " + (b.user ? b.user.name : "Unknown");
     document.getElementById("mContent").innerText = b.content;
+
+    let mImage = document.getElementById("mImage");
+    let mVideo = document.getElementById("mVideo");
+
+    if (b.imageUrl) {
+        if (b.imageUrl.includes('/video/')) {
+            mVideo.src = b.imageUrl;
+            mVideo.style.display = "block";
+            mImage.style.display = "none";
+        } else {
+            mImage.src = b.imageUrl;
+            mImage.style.display = "block";
+            mVideo.style.display = "none";
+        }
+    } else {
+        mImage.style.display = "none";
+        mVideo.style.display = "none";
+    }
 }
 
 function closeModal() {
@@ -79,6 +99,12 @@ async function load() {
                 <div class="title">${b.title}</div>
                 <div class="author-badge">${b.user ? b.user.name : "Unknown"}</div>
             </div>
+
+            ${b.imageUrl ? (b.imageUrl.includes('/video/') ?
+                `<video src="${b.imageUrl}" controls style="width:100%; border-radius:12px; margin:10px 0; max-height:300px;"></video>` :
+                `<img src="${b.imageUrl}" style="width:100%; border-radius:12px; margin:10px 0; max-height:300px; object-fit:cover;">`)
+            : ""}
+
             <div class="content">${b.content}</div>
             <div class="blog-footer">
                 <button onclick="event.stopPropagation(); edit(${b.id})">Edit</button>
@@ -92,7 +118,6 @@ async function load() {
 
     document.getElementById("blogs").innerHTML = html;
 
-    // Refresh ke baad database se counts fetch karo
     data.forEach(async b => {
         let res = await fetch(`/blogs/${b.id}/counts`);
         let counts = await res.json();

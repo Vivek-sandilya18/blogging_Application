@@ -19,6 +19,8 @@
     <div class="modal-content">
         <span class="close" onclick="closeModal()">X</span>
         <h2 id="mTitle"></h2>
+        <img id="mImage" src="" style="width:100%; border-radius:12px; margin:10px 0; display:none;">
+        <video id="mVideo" src="" controls style="width:100%; border-radius:12px; margin:10px 0; display:none;"></video>
         <p id="mContent"></p>
     </div>
 </div>
@@ -31,6 +33,24 @@ function openModal(b) {
     document.getElementById("modal").classList.remove("hidden");
     document.getElementById("mTitle").innerText = b.title;
     document.getElementById("mContent").innerText = b.content;
+
+    let mImage = document.getElementById("mImage");
+    let mVideo = document.getElementById("mVideo");
+
+    if (b.imageUrl) {
+        if (b.imageUrl.includes('/video/')) {
+            mVideo.src = b.imageUrl;
+            mVideo.style.display = "block";
+            mImage.style.display = "none";
+        } else {
+            mImage.src = b.imageUrl;
+            mImage.style.display = "block";
+            mVideo.style.display = "none";
+        }
+    } else {
+        mImage.style.display = "none";
+        mVideo.style.display = "none";
+    }
 }
 
 function closeModal() {
@@ -50,26 +70,29 @@ async function load() {
     let data = await response.json();
 
     let html = "";
-	data.forEach(b => {
-	    html += `
-	    <div class="blog-item" onclick='openModal(${JSON.stringify(b)})'>
-	        <div class="title">${b.title}</div>
-	        <div class="content">${b.content}</div>
-	        <div class="item-footer">
-	            <button onclick="event.stopPropagation(); edit(${b.id})">Edit</button>
-	            <button onclick="event.stopPropagation(); removeBlog(${b.id})" class="danger">Delete</button>
-	            <button onclick="event.stopPropagation(); react(${b.id}, 'LIKE')">Like <span id="like-${b.id}">0</span></button>
-	            <button onclick="event.stopPropagation(); react(${b.id}, 'DISLIKE')">Dislike <span id="dislike-${b.id}">0</span></button>
-	        </div>
-	    </div>
-	    `;
-	});
+    data.forEach(b => {
+        html += `
+        <div class="blog-item" onclick='openModal(${JSON.stringify(b)})'>
+            <div class="title">${b.title}</div>
 
-	document.getElementById("blogs").innerHTML = html;
+            ${b.imageUrl ? (b.imageUrl.includes('/video/') ?
+                `<video src="${b.imageUrl}" controls style="width:100%; border-radius:12px; margin:10px 0; max-height:300px;"></video>` :
+                `<img src="${b.imageUrl}" style="width:100%; border-radius:12px; margin:10px 0; max-height:300px; object-fit:cover;">`)
+            : ""}
+
+            <div class="content">${b.content}</div>
+            <div class="item-footer">
+                <button onclick="event.stopPropagation(); edit(${b.id})">Edit</button>
+                <button onclick="event.stopPropagation(); removeBlog(${b.id})" class="danger">Delete</button>
+                <button onclick="event.stopPropagation(); react(${b.id}, 'LIKE')">Like <span id="like-${b.id}">0</span></button>
+                <button onclick="event.stopPropagation(); react(${b.id}, 'DISLIKE')">Dislike <span id="dislike-${b.id}">0</span></button>
+            </div>
+        </div>
+        `;
+    });
 
     document.getElementById("blogs").innerHTML = html;
 
-    // Refresh ke baad database se counts fetch karo
     data.forEach(async b => {
         let res = await fetch(`/blogs/${b.id}/counts`);
         let counts = await res.json();

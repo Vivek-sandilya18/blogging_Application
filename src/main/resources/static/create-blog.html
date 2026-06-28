@@ -2,178 +2,101 @@
 <html>
 
 <head>
-	<link
-	rel="stylesheet"
-	href="/css/style.css">
-<title>Create Blog</title>
-
-
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Create Blog</title>
 </head>
 
 <body>
 
 <div class="nav">
-
-<div class="logo">
-
-BlogHub
-
-</div>
-
-<button
-onclick="dashboard()">
-
-Dashboard
-
-</button>
-
+    <div class="logo">BlogHub</div>
+    <button onclick="dashboard()">Dashboard</button>
 </div>
 
 <div class="wrapper">
+    <div class="editor">
 
-<div class="editor">
+        <input id="title" placeholder="Write your title...">
 
-<input
+        <textarea id="content" placeholder="Start writing..."></textarea>
 
-id="title"
+        <!-- Image upload -->
+        <div class="image-upload">
+            <label for="image">Photo / Video choose karo:</label>
+            <input type="file" id="image" accept="image/*,video/*">
+        </div>
 
-placeholder=
+        <!-- Preview -->
+        <div id="preview"></div>
 
-"Write your title..."
+        <div class="actions">
+            <button class="publish" onclick="publish()">Publish</button>
+        </div>
 
->
-
-<textarea
-
-id="content"
-
-placeholder=
-
-"Start writing..."
-
-></textarea>
-
-<div class="actions">
-
-<button
-
-class="publish"
-
-onclick="publish()"
-
->
-
-Publish
-
-</button>
-
-</div>
-
-</div>
-
+    </div>
 </div>
 
 <script>
 
 function dashboard(){
-
-window.location=
-
-"/dashboard.html";
-
+    window.location = "/dashboard.html";
 }
 
-async function publish(){
+// Image preview
+document.getElementById("image").addEventListener("change", function() {
+    let file = this.files[0];
+    let preview = document.getElementById("preview");
 
-let user=
+    if (file) {
+        let url = URL.createObjectURL(file);
+        if (file.type.startsWith("video")) {
+            preview.innerHTML = `<video src="${url}" controls style="width:100%; border-radius:12px; margin-top:10px;"></video>`;
+        } else {
+            preview.innerHTML = `<img src="${url}" style="width:100%; border-radius:12px; margin-top:10px;">`;
+        }
+    }
+});
 
-JSON.parse(
+async function publish() {
 
-localStorage
-.getItem(
-"user"
-)
+    let user = JSON.parse(localStorage.getItem("user"));
 
-);
+    if (!user) {
+        window.location = "/login.html";
+        return;
+    }
 
-if(
-!user
-){
+    let title = document.getElementById("title").value;
+    let content = document.getElementById("content").value;
+    let imageFile = document.getElementById("image").files[0];
 
-window.location=
-"/login.html";
+    if (!title || !content) {
+        alert("Title aur Content dono bharo!");
+        return;
+    }
 
-return;
+    // FormData banao
+    let formData = new FormData();
+    formData.append("blog", JSON.stringify({ title, content }));
 
-}
+    if (imageFile) {
+        formData.append("image", imageFile);
+    }
 
-let response=
+    let response = await fetch("/blogs?userId=" + user.id, {
+        method: "POST",
+        body: formData
+    });
 
-await fetch(
-
-"/blogs?userId="
-
-+
-
-user.id,
-
-{
-
-method:
-
-"POST",
-
-headers:{
-
-"Content-Type":
-
-"application/json"
-
-},
-
-body:
-
-JSON.stringify({
-
-title:
-
-document
-.getElementById(
-"title"
-)
-.value,
-
-content:
-
-document
-.getElementById(
-"content"
-)
-.value
-
-})
-
-}
-
-);
-
-if(
-response.ok
-){
-
-alert(
-"Published"
-);
-
-window.location=
-"/blogs.html";
-
-}
-
+    if (response.ok) {
+        alert("Published!");
+        window.location = "/blogs.html";
+    } else {
+        alert("Kuch galat ho gaya!");
+    }
 }
 
 </script>
 
 </body>
-
 </html>
