@@ -153,7 +153,6 @@ Like • Dislike • Comment
 
 - 🔍 Search Blogs
 - 🏷 Categories & Tags
-- 🖼 Image Upload
 - 👤 User Profile Management
 - 📑 Bookmark Blogs
 - 🛠 Admin Dashboard
