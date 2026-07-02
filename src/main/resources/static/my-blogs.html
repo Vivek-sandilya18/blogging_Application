@@ -2,6 +2,8 @@
 <html>
 
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
     <title>My Blogs</title>
 </head>
@@ -22,12 +24,20 @@
         <img id="mImage" src="" style="width:100%; border-radius:12px; margin:10px 0; display:none;">
         <video id="mVideo" src="" controls style="width:100%; border-radius:12px; margin:10px 0; display:none;"></video>
         <p id="mContent"></p>
+
+        <div class="comment-section" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+            <h4>Comments</h4>
+            <div id="commentsList" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div>
+            <textarea id="commentInput" placeholder="Write a comment..." style="width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; resize:vertical;"></textarea>
+            <button onclick="postComment()" style="margin-top:8px;">Post Comment</button>
+        </div>
     </div>
 </div>
 
 <script>
 
 let user = JSON.parse(localStorage.getItem("user"));
+let currentBlogId = null;
 
 function openModal(b) {
     document.getElementById("modal").classList.remove("hidden");
@@ -51,6 +61,9 @@ function openModal(b) {
         mImage.style.display = "none";
         mVideo.style.display = "none";
     }
+
+    currentBlogId = b.id;
+    loadComments(b.id);
 }
 
 function closeModal() {
@@ -86,6 +99,7 @@ async function load() {
                 <button onclick="event.stopPropagation(); removeBlog(${b.id})" class="danger">Delete</button>
                 <button onclick="event.stopPropagation(); react(${b.id}, 'LIKE')">Like <span id="like-${b.id}">0</span></button>
                 <button onclick="event.stopPropagation(); react(${b.id}, 'DISLIKE')">Dislike <span id="dislike-${b.id}">0</span></button>
+                <button onclick="event.stopPropagation(); openModal(${JSON.stringify(b)})">Comments <span id="comment-${b.id}">0</span></button>
             </div>
         </div>
         `;
@@ -98,6 +112,10 @@ async function load() {
         let counts = await res.json();
         document.getElementById("like-" + b.id).innerText = counts.likeCount;
         document.getElementById("dislike-" + b.id).innerText = counts.dislikeCount;
+
+        let cRes = await fetch(`/blogs/${b.id}/comments`);
+        let cData = await cRes.json();
+        document.getElementById("comment-" + b.id).innerText = cData.length;
     });
 }
 
@@ -117,6 +135,39 @@ async function react(blogId, type) {
         document.getElementById("like-" + blogId).innerText = data.likeCount;
         document.getElementById("dislike-" + blogId).innerText = data.dislikeCount;
     }
+}
+
+async function loadComments(blogId) {
+    let res = await fetch(`/blogs/${blogId}/comments`);
+    let comments = await res.json();
+
+    let html = comments.map(c => `
+        <div class="comment-item" style="padding:6px 0; border-bottom:1px solid #f0f0f0;">
+            <strong>${c.username}</strong>
+            <p style="margin:2px 0;">${c.content}</p>
+        </div>
+    `).join("");
+
+    document.getElementById("commentsList").innerHTML = html || "<p style='color:#888;'>No comments yet.</p>";
+
+    let countEl = document.getElementById("comment-" + blogId);
+    if (countEl) countEl.innerText = comments.length;
+}
+
+async function postComment() {
+    if (!user) { window.location = "/login.html"; return; }
+
+    let content = document.getElementById("commentInput").value.trim();
+    if (!content) return;
+
+    await fetch(`/blogs/${currentBlogId}/comments?userId=${user.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content })
+    });
+
+    document.getElementById("commentInput").value = "";
+    loadComments(currentBlogId);
 }
 
 load();
